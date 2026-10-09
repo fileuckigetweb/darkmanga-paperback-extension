@@ -636,13 +636,13 @@ var _Sources = (() => {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
       exports.HomeSectionType = void 0;
-      var HomeSectionType;
-      (function(HomeSectionType2) {
-        HomeSectionType2["singleRowNormal"] = "singleRowNormal";
-        HomeSectionType2["singleRowLarge"] = "singleRowLarge";
-        HomeSectionType2["doubleRow"] = "doubleRow";
-        HomeSectionType2["featured"] = "featured";
-      })(HomeSectionType = exports.HomeSectionType || (exports.HomeSectionType = {}));
+      var HomeSectionType2;
+      (function(HomeSectionType3) {
+        HomeSectionType3["singleRowNormal"] = "singleRowNormal";
+        HomeSectionType3["singleRowLarge"] = "singleRowLarge";
+        HomeSectionType3["doubleRow"] = "doubleRow";
+        HomeSectionType3["featured"] = "featured";
+      })(HomeSectionType2 = exports.HomeSectionType || (exports.HomeSectionType = {}));
     }
   });
 
@@ -754,7 +754,7 @@ var _Sources = (() => {
     contentRating: import_types.ContentRating.EVERYONE,
     websiteBaseURL: BASE,
     sourceTags: [],
-    intents: import_types.SourceIntents.MANGA_CHAPTERS
+    intents: import_types.SourceIntents.MANGA_CHAPTERS | import_types.SourceIntents.HOMEPAGE_SECTIONS
   };
   var DarkManga = class extends import_types.Source {
     constructor() {
@@ -817,6 +817,31 @@ var _Sources = (() => {
       });
       if (!pages.length) throw new Error("No publicly accessible reader images found");
       return { id: chapterId, mangaId, pages };
+    }
+    async getHomePageSections(sectionCallback) {
+      const section = {
+        id: "latest",
+        title: "\u0E21\u0E31\u0E07\u0E07\u0E30\u0E25\u0E48\u0E32\u0E2A\u0E38\u0E14",
+        type: import_types.HomeSectionType.singleRowNormal,
+        items: [],
+        containsMoreItems: true
+      };
+      sectionCallback(section);
+      const result = await this.getSearchResults(
+        { title: "" },
+        { page: 1 }
+      );
+      section.items = result.results;
+      sectionCallback(section);
+    }
+    async getViewMoreItems(homepageSectionId, metadata) {
+      if (homepageSectionId !== "latest") {
+        return { results: [] };
+      }
+      return this.getSearchResults(
+        { title: "" },
+        metadata || { page: 2 }
+      );
     }
     getMangaShareUrl(mangaId) {
       return absolute(`/${mangaId}/`);
