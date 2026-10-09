@@ -746,7 +746,7 @@ var _Sources = (() => {
     return el.text().replace(/\s+/g, " ").trim();
   }
   var DarkMangaInfo = {
-    version: "0.1.0",
+    version: "0.1.1",
     name: "DarkManga (experimental)",
     icon: "icon.png",
     author: "Community development",
@@ -773,12 +773,12 @@ var _Sources = (() => {
     async getSearchResults(query, metadata) {
       const page = metadata?.page || 1;
       const keyword = String(query.title || "").trim();
-      const url = keyword ? `${BASE}/?s=${encodeURIComponent(keyword)}&post_type=wp-manga` : `${BASE}/manga/?page=${page}`;
+      const url = keyword ? `${BASE}/?s=${encodeURIComponent(keyword)}&post_type=wp-manga` : page === 1 ? `${BASE}/manga/` : `${BASE}/manga/page/${page}/`;
       const $ = await this.load(url);
       const results = [];
       $(".page-item-detail, .c-tabs-item__content, .bs, .listupd .bs").each((_, element) => {
         const item = $(element);
-        const anchor = item.find('a[href*="/manga/"]').first();
+        const anchor = item.find(".bsx > a[href]").first();
         const href = anchor.attr("href") || "";
         const title = getText(item.find(".post-title, .tt, h3, h4").first()) || anchor.attr("title") || "";
         const genres = getText(item.find(".genres, .mg_genres, .genres-content"));
