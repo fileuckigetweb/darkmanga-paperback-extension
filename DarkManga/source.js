@@ -764,7 +764,11 @@ var _Sources = (() => {
     async load(path) {
       const request = App.createRequest({ url: absolute(path), method: "GET" });
       const response = await this.requestManager.schedule(request, 1);
-      return doc(response.data);
+      const html = String(response.data || "");
+      if (/just a moment|checking your browser|กำลังทำการตรวจสอบความปลอดภัย|cf-chl/i.test(html)) {
+        throw new Error("Website security verification required");
+      }
+      return doc(html);
     }
     async getSearchResults(query, metadata) {
       const page = metadata?.page || 1;
